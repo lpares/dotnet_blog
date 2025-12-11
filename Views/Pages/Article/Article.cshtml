@@ -1,0 +1,43 @@
+﻿@page "{id:int}"
+@using Blog.Data
+@inject ApplicationDbContext DbContext
+
+@{
+    int articleId = (int)RouteData.Values["id"];
+    var article = DbContext.Articles.FirstOrDefault(a => a.Id == articleId);
+
+    var comments = DbContext.Comments
+        .Where(c => c.IdArticle == articleId)
+        .OrderByDescending(c => c.CreatedDate)
+        .ToList();
+}
+
+<div>
+    <!-- CONTENU ARTICLE -->
+    <h1 class="text-align">@article?.Title</h1>
+    <div>
+        <img alt="illustration article" />
+        <div>
+            @article?.Content
+        </div>
+    </div>
+
+    <!-- SECTION COMMENTAIRES -->
+    <div>
+        <h3>Commentaires</h3>
+        <button>Ajouter un commentaire</button>
+
+        <!-- POSTS -->
+        @foreach (var comment in comments)
+        {
+            <div>
+                <img alt="pp utilisateur" />
+                <div>
+                    <b>@comment.IdUser</b> - @comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                </div>
+                <div>@comment.Content</div>
+                <button>Répondre</button>
+            </div>
+        }
+    </div>
+</div>

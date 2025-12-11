@@ -1,19 +1,35 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@page
+@using Blog.Data
+@inject ApplicationDbContext DbContext
+
 @{
+    var articles = DbContext.Articles
+        .OrderByDescending(c => c.UpdatedDate)
+        .ToList();
 }
 
 <div>
     <h1>Là où je parle et où je donne mon avis</h1>
 
     <div>
-        <div>
-            <img alt="illustration article" />
-            <div>Titre article 1</div>
-            <p>Contenu article</p>
-            <button asp-controller="Home" asp-action="Article">Lire l'article</button>
-            <div>Nombre commentaires</div>
-        </div>
+
+        <!-- ARTICLES -->
+        @foreach (var article in articles)
+        {
+            // Calcul du nombre de commentaires par article
+            var nbComments = DbContext.Comments
+                .Where(comment => comment.IdArticle.Equals(article.Id))
+                .Count();
+
+            <div class="article">
+                <img alt="illustration article" />
+                <div>
+                    <b>@article.Title</b>
+                </div>
+                <div>@article.Content</div>
+                <a>Lire l'article</a>
+                <div>@nbComments</div>
+            </div>
+        }
     </div>
 </div>

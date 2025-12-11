@@ -14,6 +14,13 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("AdminOnly", policy => policy.RequireRole("1")); // "1" est le rôle admin
+//});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
