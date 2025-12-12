@@ -1,0 +1,120 @@
+﻿@page "{id:int}"
+@using Blog.Data
+@using Microsoft.AspNetCore.Identity
+@inject ApplicationDbContext DbContext
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    var article = DbContext.Articles.FirstOrDefault(a => a.Id == 1);
+    var comments = DbContext.Comments
+        .Where(c => c.IdArticle == article!.Id && c.DeletedDate == null)
+        .OrderByDescending(c => c.CreatedDate)
+        .ToList();
+}
+
+<div>
+    <!-- ACTIONS ARTICLE -->
+    @if (SignInManager.IsSignedIn(User) && User.IsInRole("1"))
+    {
+        <div>
+            <button>Editer</button>
+            <button>Supprimer</button>
+        </div>
+    }
+
+    <!-- CONTENU ARTICLE -->
+    <h1 class="text-align">@article?.Title</h1>
+    <div>
+        <img alt="illustration article" />
+        <div>
+            @article?.Content
+        </div>
+    </div>
+
+    <!-- SECTION COMMENTAIRES -->
+    <div>
+        <h3>Commentaires</h3>
+
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <button id="toggleCommentButton" onclick="toggleCommentWindow()">Ajouter un commentaire</button>
+
+            <div id="commentForm" style="display:none">
+                <form asp-controller="Comments" asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="IdArticle" value="@article.Id" />
+                    <textarea id="commentText" name="Content" placeholder="Votre commentaire..."></textarea>
+                    <button type="submit">Publier</button>
+                </form>
+            </div>
+        }
+
+        <!-- POSTS -->
+        <div id="commentsList">
+            @foreach (var comment in comments)
+            {
+                var username = DbContext.Users.Where(u => u.Id == comment.IdUser).Select(u => u.Name).FirstOrDefault();
+
+                <div class="comment" id="comment-@comment.Id">
+                    <img alt="pp utilisateur" />
+                    <div>
+                        <b>@username - @comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</b>
+                    </div>
+                    <div>@comment.Content</div>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <button>Signaler</button>
+                        @if (User.IsInRole("1"))
+                        {
+                            <button>Supprimer</button>
+                        }
+
+                        <button onclick="toggleReplyWindow(@comment.Id, this)">Répondre</button>
+
+                        <div id="replyForm-@comment.Id" style="display:none">
+                            <form asp-controller="Comments" asp-action="Create" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="IdArticle" value="@article.Id" />
+                                <input type="hidden" name="IdComment" value="@comment.Id" />
+                                <textarea class="replyText" name="Content" placeholder="Votre réponse..."></textarea>
+                                <button type="submit">Publier</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Toggle Logic -->
+<script>
+    function toggleCommentWindow() {
+        const commentForm = document.getElementById('commentForm');
+        const commentButton = document.getElementById('toggleCommentButton');
+
+        const isHidden = window.getComputedStyle(commentForm).display === 'none';
+
+        if (isHidden) {
+            commentForm.style.display = 'block';
+            commentButton.textContent = 'Annuler le commentaire';
+        } else {
+            commentForm.style.display = 'none';
+            commentButton.textContent = 'Ajouter un commentaire';
+        }
+    }
+
+    function toggleReplyWindow(commentId, button) {
+        const replyForm = document.getElementById(`replyForm-${commentId}`);
+        const isHidden = window.getComputedStyle(replyForm).display === 'none';
+
+        if (isHidden) {
+            replyForm.style.display = 'block';
+            button.textContent = 'Annuler la réponse';
+        } else {
+            replyForm.style.display = 'none';
+            button.textContent = 'Répondre';
+        }
+    }
+</script>

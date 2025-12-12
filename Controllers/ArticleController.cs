@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Controllers
 {
@@ -9,11 +10,13 @@ namespace Blog.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Update()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult Delete()
         {
             return View();

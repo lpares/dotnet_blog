@@ -1,18 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Blog.Models
 {
+    //public class User : IdentityUser
     public class User
     {
         [Key]
         public int Id { get; set; }
-        
+
+        [Required]
+        public string IdentityId { get; set; }
+
         [Required]
         public string Name { get; set; }
         
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
         
         private string _password;

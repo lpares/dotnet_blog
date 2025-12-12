@@ -16,10 +16,10 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("AdminOnly", policy => policy.RequireRole("1")); // "1" est le rôle admin
-//});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("1"));
+});
 
 var app = builder.Build();
 

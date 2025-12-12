@@ -1,6 +1,8 @@
 ﻿@page
 @using Blog.Data
+@using Microsoft.AspNetCore.Identity
 @inject ApplicationDbContext DbContext
+@inject SignInManager<IdentityUser> SignInManager
 
 @{
     var articles = DbContext.Articles
@@ -22,12 +24,21 @@
                 .Count();
 
             <div class="article">
+                @if (SignInManager.IsSignedIn(User) && User.IsInRole("1"))
+                {
+                    <div class="article-actions">
+                        <button>Editer</button>
+                        <button>Supprimer</button>
+                    </div>
+                    
+                }
+
                 <img alt="illustration article" />
                 <div>
                     <b>@article.Title</b>
                 </div>
                 <div>@article.Content</div>
-                <a>Lire l'article</a>
+                <a href="/Pages/Article/@article.Id">Lire l'article</a>
                 <div>@nbComments</div>
             </div>
         }
