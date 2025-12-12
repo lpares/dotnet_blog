@@ -2,7 +2,7 @@
 @using Blog.Data
 @using Microsoft.AspNetCore.Identity
 @inject ApplicationDbContext DbContext
-@inject SignInManager<IdentityUser> SignInManager
+@inject SignInManager<User> SignInManager
 
 @{
     var article = DbContext.Articles.FirstOrDefault(a => a.Id == 1);
@@ -37,14 +37,6 @@
         margin-bottom: 25px;
         border: 1px solid #ffa50033;
     }
-
-        .article-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ffa50033;
-        }
 
     .actions {
         display: flex;
@@ -126,14 +118,6 @@
         border-left: 4px solid #ffa500;
     }
 
-        .comment img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-            border: 2px solid #ffa50055;
-        }
-
     .comment-header {
         display: flex;
         align-items: center;
@@ -210,10 +194,7 @@
     <!-- CONTENU ARTICLE -->
     <h1 class="text-align">@article?.Title</h1>
     <div>
-        <img alt="Illustration de l'article" />
-        <div>
-            @article?.Content
-        </div>
+        @article?.Content
     </div>
 
     <!-- SECTION COMMENTAIRES -->
@@ -242,7 +223,6 @@
 
                 <div class="comment" id="comment-@comment.Id">
                     <div class="comment-header">
-                        <img alt="Photo de profil" />
                         <div>
                             <b>@username - @comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</b>
                         </div>
