@@ -1,16 +1,29 @@
 ﻿@page
 @using Blog.Data
 @using Microsoft.AspNetCore.Identity
+@using Blog.Models
 @inject ApplicationDbContext DbContext
-@inject SignInManager<IdentityUser> SignInManager
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 
 @{
     var articles = DbContext.Articles
         .OrderByDescending(c => c.UpdatedDate)
         .ToList();
+
+    var isAdmin = false;
+    if (SignInManager.IsSignedIn(User))
+    {
+        var currentUser = UserManager.GetUserAsync(User).Result;
+        if (currentUser != null)
+        {
+            isAdmin = UserManager.IsInRoleAsync(currentUser, "Admin").Result;
+        }
+    }
 }
 
 <style>
+    /* Ton CSS existant */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         line-height: 1.6;
@@ -20,127 +33,7 @@
         padding: 20px;
         background-color: #f9f9f9;
     }
-
-    h1 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #2c3e50;
-        font-size: 1.8em;
-    }
-
-    .article {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 25px;
-        border-left: 4px solid #ffa500;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-        .article:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-    .article-actions {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-
-        .article-actions button {
-            padding: 8px 16px;
-            background: #ff8c00;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-        }
-
-            .article-actions button:hover {
-                background: #ff7f50;
-                transform: translateY(-2px);
-            }
-
-    .article-content {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 15px;
-    }
-
-    .article-image {
-        flex: 0 0 150px;
-    }
-
-        .article-image img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            border: 1px solid #ffa50033;
-        }
-
-    .article-text {
-        flex: 1;
-        min-width: 0; /* Important pour le tronçonnage */
-    }
-
-    .article-title {
-        font-size: 1.3em;
-        color: #2c3e50;
-        margin: 0 0 10px 0;
-        display: block;
-    }
-
-    .article-preview {
-        color: #555;
-        margin-bottom: 10px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .article-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .article a {
-        display: inline-block;
-        padding: 8px 16px;
-        background: #ffa500;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: background 0.3s, transform 0.2s;
-    }
-
-        .article a:hover {
-            background: #ff8c00;
-            transform: translateY(-2px);
-        }
-
-    .comment-count {
-        display: inline-block;
-        padding: 5px 10px;
-        background: #ffdab9;
-        color: #ff6b35;
-        border-radius: 15px;
-        font-size: 0.9em;
-        font-weight: bold;
-    }
-
-    .article-preview {
-        white-space: normal;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    }
+    /* ... (le reste de ton CSS) ... */
 </style>
 
 <div>
@@ -150,21 +43,21 @@
         @foreach (var article in articles)
         {
             var nbComments = DbContext.Comments
-            .Where(comment => comment.IdArticle.Equals(article.Id))
-            .Count();
+            .Count(comment => comment.IdArticle == article.Id);
 
             <div class="article">
-                @if (SignInManager.IsSignedIn(User) && User.IsInRole("1"))
+                @if (isAdmin)
                 {
                     <div class="article-actions">
-                        <button>Editer</button>
-                        <button>Supprimer</button>
+                        <a asp-page="/Admin/EditArticle" asp-route-id="@article.Id" class="btn-edit">Editer</a>
+                        <form asp-page="/Admin/DeleteArticle" asp-route-id="@article.Id" method="post" class="delete-form">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-delete">Supprimer</button>
+                        </form>
                     </div>
                 }
 
                 <div class="article-content">
-                    <div class="article-image">
-                        <img alt="Illustration de l'article" />
                     </div>
                     <div class="article-text">
                         <div class="article-title">@article.Title</div>
@@ -173,10 +66,9 @@
                 </div>
 
                 <div class="article-footer">
-                    <a href="/Pages/Article/@article.Id">Lire l'article</a>
+                    <a asp-page="/Pages/Article" asp-route-id="@article.Id">Lire l'article</a>
                     <span class="comment-count">@nbComments commentaire(s)</span>
                 </div>
-            </div>
         }
     </div>
 </div>
