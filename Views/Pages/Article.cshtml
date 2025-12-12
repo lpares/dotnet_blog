@@ -5,9 +5,24 @@
 @inject SignInManager<User> SignInManager
 
 @{
+    // var articleId = (int)RouteData.Values["id"];
+    // var article = DbContext.Articles.FirstOrDefault(a => a.Id == articleId);
     var article = DbContext.Articles.FirstOrDefault(a => a.Id == 1);
+
+    if (article == null)
+    {
+        <p>L'article demandé n'existe pas.</p>
+        return;
+    }
+
+    var isConnected = false;
+    if (SignInManager.IsSignedIn(User))
+    {
+        isConnected = true;
+    }
+
     var comments = DbContext.Comments
-        .Where(c => c.IdArticle == article!.Id && c.DeletedDate == null)
+        .Where(c => c.IdArticle == article.Id && c.DeletedDate == null)
         .OrderByDescending(c => c.CreatedDate)
         .ToList();
 }
@@ -183,12 +198,12 @@
 
 <div class="article-content">
     <!-- CONTENU ARTICLE -->
-    <h1 class="text-align">@article?.Title</h1>
+    <h1 class="text-align">@article.Title</h1>
+    
     <!-- ACTIONS ARTICLE -->
-    @* @if (SignInManager.IsSignedIn(User) && User.IsInRole("1")) *@
-    @* { *@
+    @if (isConnected) {
         <div class="actions text-align">
-            <form asp-controller="Articles" asp-action="Edit" asp-route-id="@article.Id" method="post">
+            <form asp-controller="Articles" asp-action="Edit" asp-route-id="@article.Id" method="get">
                 @Html.AntiForgeryToken()
                 <button type="submit">Editer</button>
             </form>
@@ -199,9 +214,9 @@
                 </button>
             </form>
         </div>
-    @* } *@
+    }
     <div>
-        @article?.Content
+        @article.Content
     </div>
     <br />
 
@@ -209,19 +224,16 @@
     <div>
         <h3>Commentaires</h3>
 
-        @* @if (SignInManager.IsSignedIn(User)) *@
-        @* { *@
-            <button id="toggleCommentButton" onclick="toggleCommentWindow()">Ajouter un commentaire</button>
+        <button id="toggleCommentButton" onclick="toggleCommentWindow()">Ajouter un commentaire</button>
 
-            <div id="commentForm" style="display:none">
-                <form asp-controller="Comments" asp-action="Create" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="IdArticle" value="@article.Id" />
-                    <textarea id="commentText" name="Content" placeholder="Votre commentaire..."></textarea>
-                    <button type="submit">Publier</button>
-                </form>
-            </div>
-        @* } *@
+        <div id="commentForm" style="display:none">
+            <form asp-controller="Comments" asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="IdArticle" value="@article.Id" />
+                <textarea id="commentText" name="Content" placeholder="Votre commentaire..."></textarea>
+                <button type="submit">Publier</button>
+            </form>
+        </div>
 
         <!-- POSTS -->
         <div id="commentsList">
@@ -237,22 +249,22 @@
                     </div>
                     <div>@comment.Content</div>
 
-                    @* @if (SignInManager.IsSignedIn(User)) *@
-                    @* { *@
-                        <div class="comment-actions">
-                            <button class="report">Signaler</button>
-                            @* @if (User.IsInRole("1")) *@
-                            @* { *@
-                                <form asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id" method="post">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" onclick="return confirm('Voulez-vous vraiment supprimer ce commentaire ?');">
-                                        Supprimer
-                                    </button>
-                                </form>
-                            @* } *@
-                            <button class="reply" onclick="toggleReplyWindow(@comment.Id, this)">Répondre</button>
-                        </div>
+                    <!-- COMMENT ACTION -->
+                    <div class="comment-actions">
+                        <button class="report">Signaler</button>
+                        
+                        @if (isConnected) {
+                            <form asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" onclick="return confirm('Voulez-vous vraiment supprimer ce commentaire ?');">
+                                    Supprimer
+                                </button>
+                            </form>
+                        }
+                        <button class="reply" onclick="toggleReplyWindow(@comment.Id, this)">Répondre</button>
+                    </div>
 
+                    @if (isConnected) {
                         <div id="replyForm-@comment.Id" style="display:none" class="reply-form">
                             <form asp-controller="Comments" asp-action="Create" method="post">
                                 @Html.AntiForgeryToken()
@@ -262,7 +274,7 @@
                                 <button type="submit">Publier</button>
                             </form>
                         </div>
-                    @* } *@
+                    }
                 </div>
             }
         </div>
@@ -270,37 +282,6 @@
 </div>
 
 <script>
-    function deleteArticle() {
-        if (confirm("Voulez-vous vraiment supprimer l'article ?")) {
-            // Récupère l'id de l'article depuis l'URL
-            const articleId = window.location.pathname.split('/').pop();
-            fetch(`/Articles/Delete/${articleId}`, {
-                method: 'POST',
-                headers: {
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? ''
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/';
-                } else {
-                    alert("Erreur lors de la suppression de l'article.");
-                }
-            })
-            .catch(() => alert("Erreur lors de la suppression de l'article."));
-        }
-    }
-
-    function toggleEditionWindow() {
-        const isHidden = window.getComputedStyle(commentForm).display === 'none';
-
-        if (isHidden) {
-            commentForm.style.display = 'block';
-        } else {
-            commentForm.style.display = 'none';
-        }
-    }
-
     function toggleCommentWindow() {
         const commentForm = document.getElementById('commentForm');
         const commentButton = document.getElementById('toggleCommentButton');

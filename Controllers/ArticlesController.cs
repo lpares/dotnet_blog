@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.Controllers
 {
-    //[Authorize("AdminOnly")]
+    [Authorize("AdminOnly")]
     public class ArticlesController : Controller
     {
         private readonly ApplicationDbContext _context;

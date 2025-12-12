@@ -8,8 +8,8 @@
 
 @{
     var articles = DbContext.Articles
-        .OrderByDescending(c => c.UpdatedDate)
-        .ToList();
+                .OrderByDescending(c => c.UpdatedDate)
+                .ToList();
 
     var isAdmin = false;
     if (SignInManager.IsSignedIn(User))
@@ -206,12 +206,15 @@
 <div>
     <h1 class="text-center">Là où je parle et où je donne mon avis</h1>
 
-    <form asp-controller="Articles" asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
-        <button type="submit" class="btn-edit text-center">
-            Ecrire un nouvel article
-        </button>
-    </form>
+    @if (isAdmin)
+    {
+        <form asp-controller="Articles" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn-edit text-center">
+                Ecrire un nouvel article
+            </button>
+        </form>
+    }
     <br />
 
     <div>

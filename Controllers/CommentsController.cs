@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class CommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -68,7 +68,7 @@ namespace Blog.Controllers
         }
 
         // GET: Comments/Edit/5
-        //[Authorize("AdminOnly")]
+        [Authorize("AdminOnly")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -89,7 +89,7 @@ namespace Blog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Authorize("AdminOnly")]
+        [Authorize("AdminOnly")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Content,CreatedDate,UpdatedDate,DeletedDate,IdUser,IdArticle,IdComment")] Comment comment)
         {
             if (id != comment.Id)
@@ -121,7 +121,7 @@ namespace Blog.Controllers
         }
 
         // GET: Comments/Delete/5
-        //[Authorize("AdminOnly")]
+        [Authorize("AdminOnly")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -142,7 +142,7 @@ namespace Blog.Controllers
         // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        //[Authorize("AdminOnly")]
+        [Authorize("AdminOnly")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var comment = await _context.Comments.FindAsync(id);
