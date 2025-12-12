@@ -12,11 +12,196 @@
         .ToList();
 }
 
-<div>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+
+    .text-align {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+
+    .article-content {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 25px;
+        border: 1px solid #ffa50033;
+    }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ffa50033;
+        }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+        .actions button {
+            padding: 10px 20px;
+            background: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+            .actions button:hover {
+                background: #ff7f50;
+                transform: translateY(-2px);
+            }
+
+    #toggleCommentButton {
+        padding: 10px 20px;
+        background: #ffa500;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 15px;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+        #toggleCommentButton:hover {
+            background: #ff8c00;
+            transform: translateY(-2px);
+        }
+
+    #commentForm, .reply-form {
+        background: #fff8f0;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ffa50033;
+    }
+
+        #commentForm textarea, .reply-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ffa50055;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        #commentForm button, .reply-form button {
+            padding: 10px 20px;
+            background: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+            #commentForm button:hover, .reply-form button:hover {
+                background: #ff7f50;
+                transform: translateY(-2px);
+            }
+
+    .comment {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        border-left: 4px solid #ffa500;
+    }
+
+        .comment img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid #ffa50055;
+        }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+        .comment-header b {
+            font-size: 1em;
+            color: #2c3e50;
+        }
+
+    .comment-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+        .comment-actions button {
+            padding: 6px 12px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+            .comment-actions button.report {
+                background: #ff6b35;
+            }
+
+                .comment-actions button.report:hover {
+                    background: #ff5e23;
+                    transform: translateY(-2px);
+                }
+
+            .comment-actions button.reply {
+                background: #4CAF50;
+            }
+
+                .comment-actions button.reply:hover {
+                    background: #45a049;
+                    transform: translateY(-2px);
+                }
+
+            .comment-actions button:not(.report):not(.reply) {
+                background: #f44336;
+            }
+
+                .comment-actions button:not(.report):not(.reply):hover {
+                    background: #d32f2f;
+                    transform: translateY(-2px);
+                }
+
+    .reply-form {
+        margin-top: 15px;
+        padding: 15px;
+        background: #fff8f0;
+        border-radius: 10px;
+        border: 1px solid #ffa50033;
+    }
+</style>
+
+<div class="article-content">
     <!-- ACTIONS ARTICLE -->
     @if (SignInManager.IsSignedIn(User) && User.IsInRole("1"))
     {
-        <div>
+        <div class="actions">
             <button>Editer</button>
             <button>Supprimer</button>
         </div>
@@ -25,7 +210,7 @@
     <!-- CONTENU ARTICLE -->
     <h1 class="text-align">@article?.Title</h1>
     <div>
-        <img alt="illustration article" />
+        <img alt="Illustration de l'article" />
         <div>
             @article?.Content
         </div>
@@ -53,26 +238,29 @@
         <div id="commentsList">
             @foreach (var comment in comments)
             {
-                var username = DbContext.Users.Where(u => u.Id == comment.IdUser).Select(u => u.Name).FirstOrDefault();
+                var username = DbContext.Users.Where(u => u.Id.Equals(comment.IdUser)).Select(u => u.Name).FirstOrDefault();
 
                 <div class="comment" id="comment-@comment.Id">
-                    <img alt="pp utilisateur" />
-                    <div>
-                        <b>@username - @comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</b>
+                    <div class="comment-header">
+                        <img alt="Photo de profil" />
+                        <div>
+                            <b>@username - @comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</b>
+                        </div>
                     </div>
                     <div>@comment.Content</div>
 
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        <button>Signaler</button>
-                        @if (User.IsInRole("1"))
-                        {
-                            <button>Supprimer</button>
-                        }
+                        <div class="comment-actions">
+                            <button class="report">Signaler</button>
+                            @if (User.IsInRole("1"))
+                            {
+                                <button>Supprimer</button>
+                            }
+                            <button class="reply" onclick="toggleReplyWindow(@comment.Id, this)">Répondre</button>
+                        </div>
 
-                        <button onclick="toggleReplyWindow(@comment.Id, this)">Répondre</button>
-
-                        <div id="replyForm-@comment.Id" style="display:none">
+                        <div id="replyForm-@comment.Id" style="display:none" class="reply-form">
                             <form asp-controller="Comments" asp-action="Create" method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="IdArticle" value="@article.Id" />

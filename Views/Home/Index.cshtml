@@ -2,25 +2,107 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    h1.display-4 {
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-size: 2.2em;
+        text-align: center;
+    }
+
+    .content-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    .illustration {
+        flex: 0 0 300px;
+        max-width: 300px;
+    }
+
+        .illustration img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 2px solid #ffa50033;
+        }
+
+    .text-content {
+        flex: 1;
+    }
+
+    h3 {
+        color: #ff8c00;
+        margin: 20px 0 10px;
+        font-size: 1.5em;
+        text-align: left;
+    }
+
+    p {
+        color: #555;
+        line-height: 1.7;
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .illustration {
+        flex: none;
+        max-width: 100%;
+    }
+
+    h1.display-4 {
+        font-size: 1.8em;
+    }
+
+    h3 {
+        font-size: 1.3em;
+    }
+
+    }
+</style>
+
+<div class="container">
     <h1 class="display-4">Bienvenue dans mon antre.</h1>
-    <div class="text-center">
-        <img alt="illustration"/>
-        <div>
+
+    <div class="content-wrapper">
+        <div class="illustration">
+            <img alt="Illustration" src="/images/illustration.jpg" />
+        </div>
+
+        <div class="text-content">
             <h3>Qui suis-je ?</h3>
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-
             </p>
+
             <h3>Que fais-je ?</h3>
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-
             </p>
+
             <h3>Comment en suis-je arrivé là ?</h3>
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-
             </p>
         </div>
     </div>

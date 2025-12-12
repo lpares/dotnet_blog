@@ -36,7 +36,7 @@ namespace Blog.Controllers
             }
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id.Equals(id));
             if (user == null)
             {
                 return NotFound();
@@ -90,7 +90,7 @@ namespace Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Email,Password,Role,CreatedDate,UpdatedDate,DeletedDate")] User user)
         {
-            if (id != user.Id)
+            if (id.Equals(user.Id))
             {
                 return NotFound();
             }
@@ -104,14 +104,14 @@ namespace Blog.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //if (!UserExists(user.Id))
+                    //{
+                    //    return NotFound();
+                    //}
+                    //else
+                    //{
+                    //    throw;
+                    //}
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -127,7 +127,7 @@ namespace Blog.Controllers
             }
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id.Equals(id));
             if (user == null)
             {
                 return NotFound();
@@ -153,7 +153,7 @@ namespace Blog.Controllers
 
         private bool UserExists(int id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id.Equals(id));
         }
     }
 }

@@ -75,14 +75,15 @@ namespace Blog.Controllers
                 Console.WriteLine($"userIdentityId: {userIdentityId}");
 
                 // Trouver l'utilisateur dans la base de données pour obtenir son Id entier
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.IdentityId == userIdentityId);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userIdentityId);
 
                 if (user == null)
                 {
                     return BadRequest("Utilisateur non trouvé.");
                 }
 
-                comment.IdUser = user.Id;
+                string id = user.Id;
+                comment.IdUser.Equals(id);
                 comment.CreatedDate = DateTime.Now;
                 comment.UpdatedDate = DateTime.Now;
 
