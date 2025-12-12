@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.Controllers
 {
-    [Authorize("AdminOnly")]
+    //[Authorize("AdminOnly")]
     public class ArticlesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -52,8 +52,6 @@ namespace Blog.Controllers
         }
 
         // POST: Articles/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Content,CreatedDate,UpdatedDate,DeletedDate")] Article article)
@@ -84,8 +82,6 @@ namespace Blog.Controllers
         }
 
         // POST: Articles/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,CreatedDate,UpdatedDate,DeletedDate")] Article article)
@@ -145,9 +141,8 @@ namespace Blog.Controllers
             if (article != null)
             {
                 _context.Articles.Remove(article);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

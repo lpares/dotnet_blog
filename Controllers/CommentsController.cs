@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class CommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -56,51 +56,19 @@ namespace Blog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,Content,CreatedDate,UpdatedDate,DeletedDate,IdUser,IdArticle,IdComment")] Comment comment)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(comment);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(comment);
-        //}
-        public async Task<IActionResult> Create([Bind("Content,IdArticle,IdComment")] Comment comment)
+        public async Task<IActionResult> Create([Bind("Id,Content,CreatedDate,UpdatedDate,DeletedDate,IdUser,IdArticle,IdComment")] Comment comment)
         {
             if (ModelState.IsValid)
             {
-                // Récupérer le GUID de l'utilisateur connecté
-                var userIdentityId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                Console.WriteLine($"userIdentityId: {userIdentityId}");
-
-                // Trouver l'utilisateur dans la base de données pour obtenir son Id entier
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userIdentityId);
-
-                if (user == null)
-                {
-                    return BadRequest("Utilisateur non trouvé.");
-                }
-
-                string id = user.Id;
-                comment.IdUser.Equals(id);
-                comment.CreatedDate = DateTime.Now;
-                comment.UpdatedDate = DateTime.Now;
-
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
-
-                // Rediriger vers la page de l'article
-                //return RedirectToAction("Article", "Pages", new { id = comment.IdArticle });
+                return RedirectToAction(nameof(Index));
             }
-
-            // Si le modèle n'est pas valide, retourner à la vue de l'article avec les erreurs
-            TempData["Error"] = "Le contenu du commentaire ne peut pas être vide.";
-            return RedirectToAction("Article", "Pages", new { id = comment.IdArticle });
+            return View(comment);
         }
 
         // GET: Comments/Edit/5
-        [Authorize("AdminOnly")]
+        //[Authorize("AdminOnly")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -121,7 +89,7 @@ namespace Blog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("AdminOnly")]
+        //[Authorize("AdminOnly")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Content,CreatedDate,UpdatedDate,DeletedDate,IdUser,IdArticle,IdComment")] Comment comment)
         {
             if (id != comment.Id)
@@ -153,7 +121,7 @@ namespace Blog.Controllers
         }
 
         // GET: Comments/Delete/5
-        [Authorize("AdminOnly")]
+        //[Authorize("AdminOnly")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -174,7 +142,7 @@ namespace Blog.Controllers
         // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize("AdminOnly")]
+        //[Authorize("AdminOnly")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var comment = await _context.Comments.FindAsync(id);

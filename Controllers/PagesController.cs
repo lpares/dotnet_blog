@@ -9,11 +9,6 @@ namespace Blog.Controllers
             return View();
         }
 
-        public IActionResult Work()
-        {
-            return View();
-        }
-
         public IActionResult Blog()
         {
             return View();
